@@ -48,10 +48,13 @@ Prerequisites: JDK 21, Android Studio (Rabbit 2026.2.1 or newer) with SDK Platfo
 cd backend
 cp ../.env.example .env        # fill in values; .env is git-ignored
 docker compose -f ../docker-compose.yml up -d
+./gradlew :data:migrate        # applies Flyway migrations with MIGRATION_DATABASE_* from your shell
 ./gradlew run
 ```
 
-Then open `http://localhost:8080/health` and the API docs at `http://localhost:8080/swagger` (`/openapi.json` for the raw spec).
+Then open `http://localhost:8080/health` (reports `"db": "ok"` once the database is configured) and the API docs at `http://localhost:8080/swagger` (`/openapi.json` for the raw spec). Tests run with `./gradlew test detekt`; the database tests use `TEST_DATABASE_URL` when set (the Compose `finpilot_test` database or the CI service container) and fall back to Testcontainers.
+
+Authentication is Supabase Auth: the backend verifies access tokens against the project's JWKS and creates the caller's profile on the first `GET /api/v1/me`. Hosted or local Supabase setup is documented in [docs/supabase-setup.md](docs/supabase-setup.md).
 
 ### Android
 

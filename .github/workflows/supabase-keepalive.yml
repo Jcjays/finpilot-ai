@@ -1,0 +1,27 @@
+name: Supabase keepalive
+
+# Supabase Free pauses projects after 7 days without API activity. A light request every 3 days keeps
+# the demo project awake. Configure repository Actions variables SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY
+# (the publishable key is public by design); the job is skipped until they exist.
+on:
+  schedule:
+    - cron: "17 3 */3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    name: Ping the hosted project
+    if: vars.SUPABASE_URL != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
+    steps:
+      - name: Auth health
+        run: curl --fail --silent --show-error "$SUPABASE_URL/auth/v1/health" -H "apikey: $SUPABASE_PUBLISHABLE_KEY"
+      - name: REST gateway
+        run: curl --fail --silent --show-error --output /dev/null "$SUPABASE_URL/rest/v1/" -H "apikey: $SUPABASE_PUBLISHABLE_KEY"
