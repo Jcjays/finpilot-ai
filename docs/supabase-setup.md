@@ -4,12 +4,15 @@ FinPilot AI runs against either the **local Supabase CLI stack** (default for de
 
 ## A. Local stack (free, offline)
 
-Prerequisites: Docker Desktop running, Node 20+.
+Prerequisites: Docker Desktop running, and the Supabase CLI (Node 20+ for `npx`, or the standalone binary).
 
 ```bash
-npx supabase init          # once; creates supabase/config.toml
 npx supabase start         # Postgres 54322, API 54321, Studio 54323, Mailpit 54324
 ```
+
+The repository already contains `supabase/config.toml` (project id `finpilot-ai`, Postgres 17, email confirmations off), so `supabase init` is not needed.
+
+If the npm wrapper fails on Windows (seen as `EPERM: operation not permitted, uv_spawn 'taskkill'`, or PowerShell refusing to run `npx.ps1`), use a standalone pre-launcher release instead: releases up to **v2.95.4** ship a single Go `supabase.exe`, while v2.100 and later wrap it in the same Node-style launcher that triggers the `taskkill` error. Download `supabase_windows_amd64.tar.gz` and `supabase_<version>_checksums.txt` for v2.95.4 from the [supabase/cli releases](https://github.com/supabase/cli/releases), verify the SHA-256, extract, and run `supabase.exe start` from the repository root.
 
 `supabase start` prints the local keys. The backend already defaults to the local stack:
 
