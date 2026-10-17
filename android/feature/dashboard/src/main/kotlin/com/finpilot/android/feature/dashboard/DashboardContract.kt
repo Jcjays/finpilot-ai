@@ -11,6 +11,7 @@ data class DashboardState(
 
 sealed interface DashboardIntent : UiIntent {
     data object Refresh : DashboardIntent
+    data object SignOut : DashboardIntent
 }
 
 sealed interface DashboardEffect : UiEffect {

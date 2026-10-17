@@ -25,4 +25,6 @@ rootProject.name = "finpilot-android"
 include(":app")
 include(":core:testing")
 include(":core:ui")
+include(":core:network")
+include(":feature:auth")
 include(":feature:dashboard")

@@ -1,5 +1,6 @@
 package com.finpilot.android.feature.dashboard
 
+import com.finpilot.android.core.network.auth.AuthRepository
 import com.finpilot.android.core.ui.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.YearMonth
@@ -10,17 +11,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel(
+    private val authRepository: AuthRepository,
     monthLabelProvider: () -> String,
 ) : MviViewModel<DashboardState, DashboardIntent, DashboardEffect>(
     DashboardState(monthLabel = monthLabelProvider()),
 ) {
 
     @Inject
-    constructor() : this(monthLabelProvider = ::currentManilaMonthLabel)
+    constructor(authRepository: AuthRepository) : this(authRepository, ::currentManilaMonthLabel)
 
     override suspend fun handle(intent: DashboardIntent) {
         when (intent) {
             DashboardIntent.Refresh -> refresh()
+            DashboardIntent.SignOut -> authRepository.signOut()
         }
     }
 

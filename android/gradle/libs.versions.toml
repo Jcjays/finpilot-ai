@@ -34,6 +34,8 @@ kotlinxDatetime = "0.8.0"
 retrofit = "3.0.0"
 okhttp = "5.5.0"
 supabase = "3.8.0"
+# supabase-kt 3.8.0 is built on Ktor 3.5.1; the client engine must match.
+ktorClient = "3.5.1"
 
 # Other
 mlkitTextRecognition = "16.0.1"
@@ -91,6 +93,7 @@ retrofit-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", n
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 supabase-auth = { group = "io.github.jan-tennert.supabase", name = "auth-kt", version.ref = "supabase" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktorClient" }
 
 mlkit-text-recognition = { group = "com.google.mlkit", name = "text-recognition", version.ref = "mlkitTextRecognition" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }

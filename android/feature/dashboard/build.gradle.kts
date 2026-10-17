@@ -39,6 +39,7 @@ kotlin {
 
 dependencies {
     implementation(project(":core:ui"))
+    implementation(project(":core:network"))
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

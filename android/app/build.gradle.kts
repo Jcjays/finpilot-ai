@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -8,6 +9,18 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.detekt)
 }
+
+// Endpoint configuration: local.properties (git-ignored) or environment variables, with emulator defaults.
+// 10.0.2.2 is the emulator's alias for the host machine. Only the PUBLISHABLE Supabase key is ever embedded.
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
+fun setting(name: String, default: String): String =
+    localProperties.getProperty(name)?.takeIf { it.isNotBlank() }
+        ?: System.getenv(name.uppercase().replace('.', '_'))?.takeIf { it.isNotBlank() }
+        ?: default
 
 android {
     namespace = "com.finpilot.android"
@@ -21,6 +34,10 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_BASE_URL", "\"${setting("finpilot.apiBaseUrl", "http://10.0.2.2:8080/")}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${setting("finpilot.supabaseUrl", "http://10.0.2.2:54321")}\"")
+        buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"${setting("finpilot.supabaseKey", "")}\"")
     }
 
     buildTypes {
@@ -31,6 +48,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -47,6 +65,8 @@ kotlin {
 
 dependencies {
     implementation(project(":core:ui"))
+    implementation(project(":core:network"))
+    implementation(project(":feature:auth"))
     implementation(project(":feature:dashboard"))
 
     implementation(libs.androidx.core.ktx)
@@ -57,6 +77,7 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
