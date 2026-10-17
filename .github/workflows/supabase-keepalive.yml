@@ -22,6 +22,8 @@ jobs:
       SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
     steps:
       - name: Auth health
-        run: curl --fail --silent --show-error "$SUPABASE_URL/auth/v1/health" -H "apikey: $SUPABASE_PUBLISHABLE_KEY"
+        run: |
+          curl --fail --silent --show-error "$SUPABASE_URL/auth/v1/health" -H "apikey: $SUPABASE_PUBLISHABLE_KEY"
       - name: REST gateway
-        run: curl --fail --silent --show-error --output /dev/null "$SUPABASE_URL/rest/v1/" -H "apikey: $SUPABASE_PUBLISHABLE_KEY"
+        run: |
+          curl --fail --silent --show-error --output /dev/null "$SUPABASE_URL/rest/v1/" -H "apikey: $SUPABASE_PUBLISHABLE_KEY"
