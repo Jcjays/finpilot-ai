@@ -20,7 +20,12 @@ import org.testcontainers.containers.PostgreSQLContainer
 object TestDatabase {
 
     const val API_ROLE = "finpilot_api"
-    const val API_PASSWORD = "finpilot_api_test_password"
+
+    /**
+     * Roles are cluster-wide, so the tests (re)set the API role's password. Using the documented Compose
+     * dev password keeps a local backend working after a test run; CI creates the role fresh anyway.
+     */
+    const val API_PASSWORD = "finpilot_api_dev_password"
 
     private val container: PostgreSQLContainer<*>? by lazy {
         if (System.getenv("TEST_DATABASE_URL") != null) {
