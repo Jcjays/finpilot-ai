@@ -18,6 +18,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Scans the entire git history on every run (the repository is small), which also sidesteps the
+      # gitleaks-action range bug on the first push of a branch. Pinned image; exit code 1 on any leak.
+      - name: Scan full git history with gitleaks
+        uses: docker://zricethezav/gitleaks:v8.24.3
+        with:
+          args: git --redact --verbose --exit-code=1 --config=/github/workspace/.gitleaks.toml /github/workspace
