@@ -1,0 +1,73 @@
+# ---- Secrets and local configuration (never commit) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.jks
+*.keystore
+keystore.properties
+local.properties
+**/local.properties
+supabase/.temp/
+supabase/.branches/
+supabase/signing_keys.json
+
+# ---- Gradle ----
+.gradle/
+**/build/
+!**/src/**/build/
+gradle-app.setting
+.gradletasknamecache
+**/.kotlin/
+
+# ---- Android ----
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/
+captures/
+.externalNativeBuild/
+.cxx/
+lint-report.html
+*.hprof
+google-services.json
+freeline.py
+freeline/
+freeline_project_description.json
+
+# ---- IntelliJ / Android Studio ----
+.idea/
+*.iml
+*.iws
+*.ipr
+.navigation/
+.project
+.classpath
+.settings/
+
+# ---- VS Code ----
+.vscode/
+!.vscode/extensions.json
+
+# ---- Node (Supabase CLI via npx) ----
+node_modules/
+npm-debug.log*
+
+# ---- Databases, logs, OS ----
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Generated reports and eval outputs (committed copies live under docs/) ----
+backend/**/build/reports/
+docs/eval/raw/

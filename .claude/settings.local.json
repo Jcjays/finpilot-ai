@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(winget install --id GitHub.cli -e --accept-source-agreements --accept-package-agreements --disable-interactivity; \"exit=$LASTEXITCODE\")",
+      "PowerShell($gh = \"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\"; Test-Path $gh; if \\(Test-Path $gh\\) { & $gh --version; & $gh auth status 2>&1 | Out-String }; \"--- docker ---\"; try { docker info --format '{{.ServerVersion}}' 2>$null } catch { \"daemon not ready yet\" })"
+    ]
+  }
+}

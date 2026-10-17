@@ -1,0 +1,28 @@
+# Normalise line endings to LF in the repository; checkout as LF everywhere
+# so Gradle wrappers and shell scripts behave identically on Windows CI/Linux CI.
+* text=auto eol=lf
+
+# Windows batch files must keep CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell scripts and Gradle wrapper are always LF and executable
+gradlew text eol=lf
+*.sh text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.jar binary
+*.keystore binary
+*.jks binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.mp4 binary
+*.pdf binary
