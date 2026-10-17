@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -92,7 +93,9 @@ fun SignInScreen(
                 singleLine = true,
                 isError = state.email.isNotEmpty() && !state.isEmailValid,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(SignInTestTags.EMAIL),
             )
             Spacer(Modifier.height(12.dp))
             OutlinedTextField(
@@ -104,7 +107,9 @@ fun SignInScreen(
                 isError = state.password.isNotEmpty() && !state.isPasswordValid,
                 supportingText = { Text("At least ${SignInState.MIN_PASSWORD_LENGTH} characters") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(SignInTestTags.PASSWORD),
             )
             state.error?.let { error ->
                 Spacer(Modifier.height(8.dp))
@@ -118,7 +123,9 @@ fun SignInScreen(
             Button(
                 onClick = { onIntent(SignInIntent.Submit) },
                 enabled = state.canSubmit,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(SignInTestTags.SUBMIT),
             ) {
                 if (state.isSubmitting) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
@@ -126,7 +133,11 @@ fun SignInScreen(
                     Text(if (isSignUp) "Create account" else "Sign in")
                 }
             }
-            TextButton(onClick = { onIntent(SignInIntent.ToggleMode) }, enabled = !state.isSubmitting) {
+            TextButton(
+                onClick = { onIntent(SignInIntent.ToggleMode) },
+                enabled = !state.isSubmitting,
+                modifier = Modifier.testTag(SignInTestTags.TOGGLE_MODE),
+            ) {
                 Text(if (isSignUp) "Already have an account? Sign in" else "New here? Create an account")
             }
         }
