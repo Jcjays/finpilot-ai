@@ -13,6 +13,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.server.status.pages)
     implementation(libs.ktor.server.call.id)
+    implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.routing.openapi)
 
     testImplementation(kotlin("test"))
