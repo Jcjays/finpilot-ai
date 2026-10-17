@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 
 plugins {
@@ -24,6 +25,10 @@ subprojects {
                 "src/test/kotlin",
                 "src/androidTest/kotlin",
             )
+        }
+        // detekt 1.23 derives the JVM target from the daemon JDK when unset; Android Studio may run Gradle on JDK 25.
+        tasks.withType<Detekt>().configureEach {
+            jvmTarget = "17"
         }
     }
 }
