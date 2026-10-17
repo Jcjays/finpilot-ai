@@ -23,5 +23,10 @@ jobs:
       # gitleaks-action range bug on the first push of a branch. Pinned image; exit code 1 on any leak.
       - name: Scan full git history with gitleaks
         uses: docker://zricethezav/gitleaks:v8.24.3
+        env:
+          # The container runs as a different user than the checkout owner; tell git the mount is trusted.
+          GIT_CONFIG_COUNT: "1"
+          GIT_CONFIG_KEY_0: safe.directory
+          GIT_CONFIG_VALUE_0: /github/workspace
         with:
           args: git --redact --verbose --exit-code=1 --config=/github/workspace/.gitleaks.toml /github/workspace
