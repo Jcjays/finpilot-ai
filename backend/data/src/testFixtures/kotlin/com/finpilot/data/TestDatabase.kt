@@ -35,8 +35,8 @@ object TestDatabase {
     }
 
     val jdbcUrl: String get() = System.getenv("TEST_DATABASE_URL") ?: container!!.jdbcUrl
-    private val adminUser: String get() = System.getenv("TEST_DATABASE_USER") ?: container!!.username
-    private val adminPassword: String get() = System.getenv("TEST_DATABASE_PASSWORD") ?: container!!.password
+    val adminUser: String get() = System.getenv("TEST_DATABASE_USER") ?: container!!.username
+    val adminPassword: String get() = System.getenv("TEST_DATABASE_PASSWORD") ?: container!!.password
 
     val adminDataSource: DataSource by lazy { dataSource(adminUser, adminPassword, poolSize = 2) }
     val apiDataSource: DataSource by lazy { dataSource(API_ROLE, API_PASSWORD, poolSize = 2) }

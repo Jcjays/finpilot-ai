@@ -36,6 +36,14 @@ dependencies {
     testRuntimeOnly(libs.logback.classic)
 }
 
+tasks.register<JavaExec>("migrate") {
+    group = "database"
+    description = "Applies Flyway migrations using MIGRATION_DATABASE_URL (or DATABASE_URL) " +
+        "with MIGRATION_DATABASE_USER / MIGRATION_DATABASE_PASSWORD from the environment."
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.finpilot.data.db.MigrateMain")
+}
+
 tasks.withType<Test>().configureEach {
     // Pass the CI / local database coordinates through to the tests; Testcontainers is the fallback.
     listOf("TEST_DATABASE_URL", "TEST_DATABASE_USER", "TEST_DATABASE_PASSWORD").forEach { name ->
