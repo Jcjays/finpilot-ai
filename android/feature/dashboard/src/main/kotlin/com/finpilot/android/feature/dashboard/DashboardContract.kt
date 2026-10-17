@@ -7,6 +7,9 @@ import com.finpilot.android.core.ui.mvi.UiState
 data class DashboardState(
     val monthLabel: String,
     val isRefreshing: Boolean = false,
+    /** Email of the signed-in profile as returned by the backend, null until loaded. */
+    val profileEmail: String? = null,
+    val currency: String? = null,
 ) : UiState
 
 sealed interface DashboardIntent : UiIntent {

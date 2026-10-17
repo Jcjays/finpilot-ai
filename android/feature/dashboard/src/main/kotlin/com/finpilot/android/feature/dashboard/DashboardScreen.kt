@@ -79,6 +79,13 @@ fun DashboardScreen(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = state.profileEmail?.let { "Signed in as $it · ${state.currency.orEmpty()}" }
+                    ?: "Loading your profile…",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Spacer(Modifier.height(24.dp))
             Button(
                 onClick = { onIntent(DashboardIntent.Refresh) },
@@ -99,7 +106,7 @@ fun DashboardScreen(
 private fun DashboardScreenPreview() {
     FinPilotTheme {
         DashboardScreen(
-            state = DashboardState(monthLabel = "October 2026"),
+            state = DashboardState(monthLabel = "October 2026", profileEmail = "chris@example.test", currency = "PHP"),
             onIntent = {},
         )
     }
