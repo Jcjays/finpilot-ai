@@ -1,0 +1,17 @@
+# gitleaks configuration: extend the default rules and allow only documented dev-only placeholders.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documented local-development placeholders (never valid against hosted services)"
+regexes = [
+  '''super-secret-jwt-token-with-at-least-32-characters-long''',
+  '''finpilot_(api|migrator)_(dev|ci)_password''',
+  '''replace-with-publishable-key''',
+]
+paths = [
+  '''\.env\.example$''',
+  '''docker-compose\.yml$''',
+  '''backend/docker/initdb/.*\.sql$''',
+  '''supabase/config\.toml$''',
+]

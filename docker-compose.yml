@@ -1,0 +1,25 @@
+# Local PostgreSQL 17 for FinPilot AI backend development and tests.
+# Usage:  docker compose up -d        (from the repository root)
+# Roles:  finpilot_migrator owns the schema and runs Flyway; finpilot_api is the least-privilege
+#         role the Ktor server connects as (subject to Row Level Security). Dev passwords only.
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: finpilot-postgres
+    environment:
+      POSTGRES_DB: finpilot
+      POSTGRES_USER: finpilot_migrator
+      POSTGRES_PASSWORD: finpilot_migrator_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - finpilot_pgdata:/var/lib/postgresql/data
+      - ./backend/docker/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finpilot_migrator -d finpilot"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  finpilot_pgdata:
