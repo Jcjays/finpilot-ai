@@ -59,8 +59,16 @@ Authentication is Supabase Auth: the backend verifies access tokens against the 
 ### Android
 
 1. Open `android/` in Android Studio.
-2. Create `android/local.properties` with `sdk.dir=<path to your Android SDK>` (Android Studio does this for you).
-3. Run the `app` configuration on an API 26+ emulator or device.
+2. Create `android/local.properties` with `sdk.dir=<path to your Android SDK>` (Android Studio does this for you) and the endpoints the app should use. Emulator defaults point at the host machine:
+
+   ```properties
+   finpilot.apiBaseUrl=http://10.0.2.2:8080/
+   finpilot.supabaseUrl=http://10.0.2.2:54321
+   finpilot.supabaseKey=<publishable key printed by supabase start, or your hosted project's publishable key>
+   ```
+
+   Only the publishable key is ever embedded in the APK; the same values can be supplied as `FINPILOT_APIBASEURL`, `FINPILOT_SUPABASEURL` and `FINPILOT_SUPABASEKEY` environment variables in CI.
+3. Run the `app` configuration on an API 26+ emulator or device. Sign up with any email; the local stack has email confirmation disabled.
 
 From the command line:
 

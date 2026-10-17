@@ -7,8 +7,8 @@ Updated after every milestone (and after meaningful increments within one). Noth
 | Milestone | Status | Notes |
 |---|---|---|
 | 0 — Planning | ✅ Done (2026-10-17) | Environment inspected, free-tier limits and library compatibility verified, architecture/schema/API/screens approved. See [PROJECT_PLAN.md](PROJECT_PLAN.md). |
-| 1 — Foundation | ✅ Done (2026-10-17) | Repo `Jcjays/finpilot-ai` created (public), `main` pushed, Backend CI / Android CI / Security all green on `58d0b1e` |
-| 2 — Database and Authentication | 🚧 In progress | Supabase JWT verification, `/me`, Flyway schema with RLS, Android sign-in |
+| 1 — Foundation | ✅ Done (2026-10-17) | Repo `Jcjays/finpilot-ai` (public), Ktor and Android skeletons, Docker Compose, CI green |
+| 2 — Database and Authentication | ✅ Done (2026-10-17) | Flyway schema with forced RLS, Supabase JWT verification, `/me` profiles, Android sign-in/sign-up, end-to-end verified against the local Supabase stack |
 | 3 — Core Finance | ⬜ Not started | |
 | 4 — Receipt Intelligence | ⬜ Not started | |
 | 5 — AI Assistant | ⬜ Not started | |
@@ -18,34 +18,38 @@ Updated after every milestone (and after meaningful increments within one). Noth
 
 ## Latest verified state (2026-10-17)
 
-- **Latest code commit:** `58d0b1e` — `ci: mark the workspace as a safe directory for the gitleaks container`
-- **Pushed to GitHub:** yes — https://github.com/Jcjays/finpilot-ai (public), `origin/main` = `58d0b1e`
-- **GitHub Actions on `58d0b1e`:** Backend CI ✅ (2m30s, run 39020822625), Android CI ✅ (4m11s, run 39021058291), Security ✅ (run 39021058299). Three earlier runs failed and were fixed: gitleaks first-push range bug (switched to the pinned gitleaks image over full history), SDK package name (`platforms;android-37.1`), container git ownership (`safe.directory`).
-- **Backend** (`backend/`, Kotlin 2.3.21, Ktor 3.6.0, Gradle 9.3.1): `./gradlew test detekt` → 3 tests passed, 0 detekt issues; `:app:buildFatJar` → `app-all.jar` (55 MB); smoke run on port 18080: `GET /health` 200 with `X-Request-Id`, `GET /openapi.json` 200 listing `/health`, `GET /swagger` 200, unknown route 404 with error envelope
-- **Android** (`android/`, Kotlin 2.4.21, AGP 9.3.3, Gradle 9.5.0, compileSdk 37.1): `./gradlew testDebugUnitTest detekt :app:lintDebug :app:assembleDebug` → 5 unit tests passed (3 `MviViewModelTest`, 2 `DashboardViewModelTest`), 0 detekt issues, Android Lint clean, `app-debug.apk` (11.9 MB)
-- **CI:** `backend-ci.yml`, `android-ci.yml`, `security.yml` (gitleaks) green on GitHub Actions
-- **Not yet verified:** app launch on an emulator (planned for the Milestone 2 sign-in flow)
+- **Latest code commit:** `1f0b6a5` — `docs: document the Windows Supabase CLI workaround and pin local config to CLI 2.95.4` (this status update follows it)
+- **Pushed to GitHub:** yes — https://github.com/Jcjays/finpilot-ai, `origin/main` = `1f0b6a5`
+- **GitHub Actions:** Backend CI, Android CI and Security green on every push through `a8012e0` (the keepalive workflow is skipped until the `SUPABASE_URL` repository variable exists). Runs for `0de32c3`/`1f0b6a5` were in progress at the time of writing.
+- **Backend** (`backend/`): `./gradlew test detekt` → 45 tests passed (3 health/OpenAPI, 11 JWT verifier, 8 `/me` route with database, 6 migration, 7 row-level security, 4 profile repository, 4 migrate CLI, 2 profile service), 0 detekt issues. Smoke on a real server: `/health` reports `db: ok`, `/api/v1/me` returns the persisted profile for a valid token (idempotent), 401 without one.
+- **Android** (`android/`): `./gradlew testDebugUnitTest detekt :app:lintDebug :app:assembleDebug` → 20 unit tests passed (MVI base 3, sign-in ViewModel 6, dashboard ViewModel 4, bearer interceptor 4, token authenticator 4), detekt and Android Lint clean, debug APK built.
+- **End to end** (emulator Pixel 9 Pro API 34, local Supabase stack, backend on 8080, Compose Postgres): instrumented `SignUpToDashboardE2ETest` passed — a new account was created in Supabase Auth, the app called `GET /api/v1/me` with the issued token, the backend verified it and created the profile row, and the dashboard displayed the signed-in email with currency PHP.
 
 ## Completed work
 
+### Milestone 2 — Database and Authentication (2026-10-17)
+- **Schema:** Flyway `V1__init.sql` creates the twelve approved tables (minor-unit money, text enums with CHECKs, soft deletes, transfer/refund invariants, `updated_at` triggers), the least-privilege `finpilot_api` role (no DELETE on content, append-only audit log), and forced Row Level Security with one policy shape that works for both the backend (`app.current_user_id` set per transaction) and PostgREST (JWT claims). `V2__seed_categories.sql` seeds 28 Philippine categories with fixed ids. `./gradlew :data:migrate` applies migrations with schema-owner credentials.
+- **Backend auth:** `SupabaseJwtVerifierFactory` verifies ES256/RS256 tokens against the project JWKS (cached 10 minutes, keyed by `kid`) with issuer, audience, role and expiry checks; the legacy HS256 secret is accepted only when `APP_ENV=local`, and startup fails if it is set elsewhere. `GET /api/v1/me` creates the caller's profile on first sign-in through `ProfileService` → `Transactor.withUser` (Exposed, sets the RLS context) → `ProfileRepository`. `/health` reports database status; a database is mandatory in prod.
+- **Android auth:** `core:network` with an `AuthRepository` over supabase-kt (session state, sign-in, sign-up, sign-out, refresh), a bearer-token interceptor and one-shot 401 authenticator scoped to the FinPilot API host, and a Retrofit client; `feature:auth` sign-in/sign-up screen with an MVI ViewModel; session gate at the app root; dashboard shows the profile from `/me` and offers sign-out; BuildConfig endpoints from `local.properties` with emulator defaults; debug-only cleartext policy for the emulator host.
+- **Tests:** written before implementation at each step (migrations, RLS, verifier, routes, repository, ViewModels, interceptor, authenticator), plus the instrumented end-to-end test, which skips itself when no local backend is reachable.
+- **Docs and ops:** [docs/supabase-setup.md](docs/supabase-setup.md) runbook (local stack and hosted Free project, session pooler, ES256 keys, API role password), `supabase/config.toml`, and a keepalive workflow for the hosted project.
+
 ### Milestone 1 — Foundation (2026-10-17)
-- Installed GitHub CLI 2.102.0 via winget; initialised git on `main`; added `.gitignore`, `.gitattributes` (LF), `.editorconfig`, MIT `LICENSE`, `.env.example`, `README.md`, `PROJECT_PLAN.md`.
-- **Backend skeleton:** five Gradle modules (`app`, `api`, `domain`, `data`, `ai`); Ktor server with Koin, typed `AppConfig` (env + AI provider), request ids (`X-Request-Id`) with MDC logging, JSON success/error envelopes, StatusPages mapping (404/405/400/500), `/health`, OpenAPI document generated from the routing tree at `/openapi.json` plus Swagger UI at `/swagger`, Ktor OpenAPI compiler extension enabled, detekt, route tests written first (RED) then implemented (GREEN).
-- **Docker Compose:** `postgres:17-alpine` with init script creating the least-privilege `finpilot_api` role and a `finpilot_test` database.
-- **Android skeleton:** `app`, `core:ui` (emerald Material 3 theme, `MviViewModel` base, Navigation 3 route keys), `core:testing` (shared dispatcher rule), `feature:dashboard` (contract, Hilt ViewModel, stateless screen with previews); single `NavDisplay` back stack; Hilt via KSP under AGP 9 built-in Kotlin; detekt; tests written first for the MVI base and the dashboard ViewModel.
-- **CI:** backend workflow (Postgres service container, detekt, tests, fat jar), Android workflow (SDK 37, detekt, unit tests, lint, APK artifact), gitleaks secret scanning with an allowlist for documented dev placeholders.
+- GitHub CLI installed; repository initialised with `.gitignore`, LF `.gitattributes`, `.editorconfig`, MIT `LICENSE`, `.env.example`, README and plan.
+- Ktor backend skeleton (`app`, `api`, `domain`, `data`, `ai`) with Koin, request ids, JSON envelopes, StatusPages, `/health`, generated `/openapi.json` + Swagger UI, detekt; Docker Compose Postgres 17 with role initialisation.
+- Android skeleton (`app`, `core:ui`, `core:testing`, `feature:dashboard`) with Compose BOM 2026.09.00, Hilt via KSP, Navigation 3, emerald Material 3 theme, `MviViewModel` base, detekt; CI workflows for backend, Android and gitleaks.
 
 ### Milestone 0 — Planning (2026-10-17)
-- Inspected the Windows development environment (JDK 21, Android Studio Rabbit 2026.2.1, Android SDK, Docker Desktop, Git); verified Supabase Free limits, Anthropic API billing, GitHub Actions allowances, and the CC BY 4.0 licence of the Figma inspiration kit.
-- Pinned a compatible toolchain and designed the schema, REST contract, deterministic calculation rules, AI tool loop, and evaluation harness.
+- Environment inspected; Supabase Free limits, Anthropic API billing, GitHub Actions allowances and the Figma kit licence verified; compatible toolchain pinned; schema, REST contract, calculation rules, AI tool loop and evaluation harness designed.
 
 ## Known issues
 
-- **Workflows with `paths` filters do not run on the very first push of a new branch**; the backend and Android workflows were dispatched manually once. Later pushes trigger them normally.
-- **Docker Desktop** needed a second launch and about ten minutes before its Linux engine became reachable.
-- **compileSdk 37.1 required:** AndroidX Compose 1.12.x and Navigation 3 1.2.0 declare a minimum compileSdk of 37, so SDK Platform 37.1 must be installed (the plan assumed 36).
-- `hiltViewModel()` for Compose now lives in `androidx.hilt:hilt-lifecycle-viewmodel-compose` (the navigation-compose variant is deprecated); the project uses the new artifact.
+- **Supabase CLI on this Windows machine:** releases from v2.100 ship a launcher that needs `taskkill.exe`, which this user account cannot run; the local stack is driven with the last pure-Go release (v2.95.4), and two newer `config.toml` entries (`db.orioledb_version`, `[local_smtp]`) are commented out for it. Documented in the runbook.
+- **Test role password is cluster-wide:** integration tests set `finpilot_api` to the Compose dev password; running them against a database shared with another environment would change that role's password.
+- **compileSdk 37.1 required** by Compose 1.12 and Navigation 3 1.2; SDK Platform 37.1 must be installed.
+- **Android Studio regenerates `gradle/gradle-daemon-jvm.properties`** (JDK 25); it is git-ignored and detekt's JVM target is pinned to 17 so builds stay green either way.
+- Instrumented tests are not part of CI (nightly `workflow_dispatch` only); the E2E test needs the local stack.
 
 ## Next task
 
-**Milestone 2 — Database and Authentication**: Supabase JWT verification (JWKS ES256/RS256 + local HS256) with `/me`, Flyway `V1__init.sql` + seed categories, RLS policies and the `finpilot_api` role with cross-user tests, the Supabase project runbook and keepalive workflow, and Android sign-in/sign-up with token refresh.
+**Milestone 3 — Core Finance:** accounts and categories endpoints, transactions CRUD with cursor pagination and idempotency keys, deterministic calculation module with edge-case tests (Asia/Manila month boundaries, refunds, transfers, pending), `GET /finance/summary` and `/finance/category-breakdown`, budgets, Room cache with a transaction outbox and `SyncWorker`, and the dashboard, transaction list, editor, details and budgets screens.
