@@ -33,7 +33,7 @@ Agreed scope and implementation plan (approved 2026-10-17). This file records *w
 
 ## 4. Technology stack (pinned)
 
-**Android:** AGP 9.3.3 (built-in Kotlin), Gradle 9.5.0, Kotlin 2.4.21, KSP 2.3.12, compileSdk/targetSdk 36, minSdk 26, Compose BOM 2026.09.00 (Material 3 1.4.0), Navigation 3 1.2.0, Lifecycle 2.11.0, Hilt 2.60.1 + androidx.hilt 1.4.0, Room 2.8.5, DataStore 1.2.1, Retrofit 3.0.0 + kotlinx-serialization converter, OkHttp 5.5.0, kotlinx-serialization 1.11.0, kotlinx-coroutines 1.11.0, kotlinx-datetime 0.8.0, supabase-kt 3.8.0 (auth), CameraX 1.6.2, ML Kit text-recognition 16.0.1 (bundled), WorkManager 2.12.0, Vico 3.3.1, JUnit, MockK 1.14.11, Turbine, detekt 1.23.8.
+**Android:** AGP 9.3.3 (built-in Kotlin), Gradle 9.5.0, Kotlin 2.4.21, KSP 2.3.12, compileSdk 37.1 (required by Compose 1.12 and Navigation 3 1.2), targetSdk 36, minSdk 26, Compose BOM 2026.09.00 (Material 3 1.4.0), Navigation 3 1.2.0, Lifecycle 2.11.0, Hilt 2.60.1 + androidx.hilt 1.4.0, Room 2.8.5, DataStore 1.2.1, Retrofit 3.0.0 + kotlinx-serialization converter, OkHttp 5.5.0, kotlinx-serialization 1.11.0, kotlinx-coroutines 1.11.0, kotlinx-datetime 0.8.0, supabase-kt 3.8.0 (auth), CameraX 1.6.2, ML Kit text-recognition 16.0.1 (bundled), WorkManager 2.12.0, Vico 3.3.1, JUnit, MockK 1.14.11, Turbine, detekt 1.23.8.
 
 **Backend:** Gradle 9.3.1, Kotlin 2.3.21, JDK 21, Ktor 3.6.0 (netty, routing, content-negotiation, auth-jwt, status-pages, call-id, call-logging, cors, rate-limit, routing-openapi, openapi, swagger, client-cio), Exposed 1.6.0, PostgreSQL JDBC 42.7.14, HikariCP 7.1.0, Flyway 13.10.3, Koin 4.2.2, auth0 java-jwt 4.6.2 + jwks-rsa 0.24.1, logback 1.6.5, JUnit 5, MockK, Testcontainers 1.21.4, Konsist, detekt 1.23.8.
 

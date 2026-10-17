@@ -40,7 +40,7 @@ supabase/  local Supabase CLI configuration (schema is owned by Flyway in backen
 
 ## Getting started
 
-Prerequisites: JDK 21, Android Studio (Rabbit 2026.2.1 or newer) with SDK Platform 36, Docker Desktop, Git. Node 20+ is optional for the Supabase CLI via `npx`.
+Prerequisites: JDK 21, Android Studio (Rabbit 2026.2.1 or newer) with SDK Platform 37.1 (the current AndroidX Compose and Navigation 3 releases require compileSdk 37), Docker Desktop, Git. Node 20+ is optional for the Supabase CLI via `npx`.
 
 ### Backend
 
@@ -58,6 +58,13 @@ Then open `http://localhost:8080/health` and the API docs at `http://localhost:8
 1. Open `android/` in Android Studio.
 2. Create `android/local.properties` with `sdk.dir=<path to your Android SDK>` (Android Studio does this for you).
 3. Run the `app` configuration on an API 26+ emulator or device.
+
+From the command line:
+
+```bash
+cd android
+./gradlew testDebugUnitTest detekt :app:lintDebug :app:assembleDebug
+```
 
 ### AI modes
 
