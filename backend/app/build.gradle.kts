@@ -44,4 +44,5 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(libs.ktor.server.test.host)
+    testImplementation(testFixtures(project(":data")))
 }

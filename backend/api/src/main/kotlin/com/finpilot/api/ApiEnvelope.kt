@@ -44,6 +44,7 @@ object ErrorCodes {
     const val METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED"
     const val CONFLICT = "CONFLICT"
     const val RATE_LIMITED = "RATE_LIMITED"
+    const val DATABASE_UNAVAILABLE = "DATABASE_UNAVAILABLE"
     const val INTERNAL = "INTERNAL"
 }
 

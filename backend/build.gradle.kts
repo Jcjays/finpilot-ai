@@ -8,6 +8,19 @@ plugins {
     alias(libs.plugins.detekt) apply false
 }
 
+/**
+ * Integration tests in several modules share one PostgreSQL database and each test class recreates the
+ * schema, so the test tasks must not run concurrently. A build service with a single permit serialises them.
+ */
+abstract class IntegrationDatabaseLock : BuildService<BuildServiceParameters.None>
+
+val integrationDatabaseLock = gradle.sharedServices.registerIfAbsent(
+    "integrationDatabaseLock",
+    IntegrationDatabaseLock::class,
+) {
+    maxParallelUsages.set(1)
+}
+
 subprojects {
     group = "com.finpilot"
     version = "0.1.0"
@@ -18,6 +31,7 @@ subprojects {
         }
         tasks.withType<Test>().configureEach {
             useJUnitPlatform()
+            usesService(integrationDatabaseLock)
             testLogging {
                 events("passed", "failed", "skipped")
                 showStandardStreams = false

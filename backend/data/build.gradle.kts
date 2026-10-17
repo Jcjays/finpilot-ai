@@ -5,6 +5,13 @@ plugins {
     `java-test-fixtures`
 }
 
+kotlin {
+    compilerOptions {
+        // Exposed 1.x maps uuid columns to kotlin.uuid.Uuid, which is still behind an opt-in.
+        optIn.add("kotlin.uuid.ExperimentalUuidApi")
+    }
+}
+
 dependencies {
     implementation(project(":domain"))
 
